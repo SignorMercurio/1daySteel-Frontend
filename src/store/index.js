@@ -1,7 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { SessionStorage } from 'quasar'
-// import example from './module-example'
 
 Vue.use(Vuex)
 
@@ -46,7 +44,6 @@ export default function(/* { ssrContext } */) {
     actions: {
       Login({ commit }, userInfo) {
         commit('login', userInfo)
-        SessionStorage.set('userInfo', userInfo)
         if (userInfo.type !== 0) {
           Vue.prototype.$axios
             .get(`company?user_id=${userInfo.id}&id=36017`)
@@ -59,7 +56,6 @@ export default function(/* { ssrContext } */) {
       },
       Logout({ commit }) {
         commit('logout')
-        SessionStorage.remove('userInfo')
       },
       getFavList({ commit }) {
         Vue.prototype.$axios.get('collection/group_names').then(res => {

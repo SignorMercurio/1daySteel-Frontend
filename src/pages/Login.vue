@@ -70,7 +70,6 @@ export default {
         username: '',
         password: ''
       },
-
       savePass: false
     }
   },
@@ -89,11 +88,7 @@ export default {
         if (res) {
           this.$store.dispatch('Login', res.data.data)
           this.$store.dispatch('getFavList')
-          this.$q.notify({
-            color: 'positive',
-            icon: 'check_circle',
-            message: '登录成功！'
-          })
+          this.$success('登录')
           setTimeout(() => {
             this.$router.push('/')
           }, 500)

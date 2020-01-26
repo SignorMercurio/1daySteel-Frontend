@@ -30,7 +30,12 @@
             </q-item>
           </q-list>
         </q-btn-dropdown>
-        <q-btn color="primary" icon="add" label="新建分组" @click="newGroup"></q-btn>
+        <q-btn
+          color="primary"
+          icon="add"
+          label="新建分组"
+          @click="newGroup"
+        ></q-btn>
       </div>
       <div class="q-mt-md">
         <q-table
@@ -50,10 +55,13 @@
                 v-if="props.row.order === 1"
                 color="primary"
                 @click="untop(props.row.collection_id)"
-              >取消</q-btn>
+                >取消</q-btn
+              >
               <q-btn v-else @click="top(props.row.collection_id)">置顶</q-btn>
-              <q-btn @click="openURL(props.row.collection_id)">详情</q-btn>
-              <q-btn color="negative" @click="del(props.row.collection_id)">删除</q-btn>
+              <q-btn @click="open(props.row.collection_id)">详情</q-btn>
+              <q-btn color="negative" @click="del(props.row.collection_id)"
+                >删除</q-btn
+              >
             </q-td>
           </template>
         </q-table>
@@ -139,7 +147,9 @@ export default {
       this.loading = true
       this.$axios
         .get(
-          `collection/detail?group_name=${this.group}&pageNum=${props.pagination.page}&pageSize=${props.pagination.rowsPerPage}`
+          `collection/detail?group_name=${this.group}&pageNum=${
+            props.pagination.page
+          }&pageSize=${props.pagination.rowsPerPage}`
         )
         .then(res => {
           if (res) {
@@ -175,11 +185,7 @@ export default {
             .post(`collection/removeCollection?collection_id=${id}`)
             .then(res => {
               if (res) {
-                this.$q.notify({
-                  color: 'positive',
-                  icon: 'check_circle',
-                  message: '删除成功！'
-                })
+                this.$success('删除')
                 this.getList()
               }
             })
@@ -197,17 +203,13 @@ export default {
         .onOk(data => {
           this.$axios.post(`collection/group?group_name=${data}`).then(res => {
             if (res) {
-              this.$q.notify({
-                color: 'positive',
-                icon: 'check_circle',
-                message: '分组创建成功！'
-              })
+              this.$success('分组创建')
               this.$store.dispatch('getFavList')
             }
           })
         })
     },
-    openURL(id) {
+    open(id) {
       this.$axios
         .get(`collection/company_url?collection_id=${id}`)
         .then(res => {

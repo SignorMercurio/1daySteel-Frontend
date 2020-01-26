@@ -17,6 +17,17 @@ export default {
       isRouterAlive: true
     }
   },
+  created() {
+    let store = sessionStorage.getItem('store')
+    if (store) {
+      this.$store.replaceState(
+        Object.assign({}, this.$store.state, JSON.parse(store))
+      )
+    }
+    window.addEventListener('beforeunload', () => {
+      sessionStorage.setItem('store', JSON.stringify(this.$store.state))
+    })
+  },
   methods: {
     reload() {
       this.isRouterAlive = false

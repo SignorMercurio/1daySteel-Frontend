@@ -43,7 +43,7 @@ See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
     - [x] 注册
     - [x] 忘记密码
     - [x] 选填邀请注册码
-    - [ ] 打开邀请注册链接
+    - [x] 打开邀请注册链接
     - [x] 升级客户账号
 - 后台管理系统功能版块
   - 管理系统首页
@@ -73,7 +73,7 @@ See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
     - [x] 积分查询
     - [x] 查看消息
     - [x] 重置密码
-    - [ ] 推荐好友注册
+    - [x] 推荐好友注册
   - 会员中心
     - [ ] 支付会员费用
     - [x] 积分兑换
@@ -86,5 +86,5 @@ See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
 - 公司专属介绍功能版块
   - 公司介绍
     - [ ] 公司介绍
-    - [ ] 在线交谈
-    - [ ] 统计访问次数
+    - [x] 在线交谈
+    - [x] 统计访问次数

@@ -10,8 +10,8 @@
       <div class="col q-mt-md q-gutter-md">
         <div class="row q-gutter-sm">
           <q-input dense v-model="url" label="公司网址" readonly />
-          <q-btn label="复制" @click="copy(url)"></q-btn>
-          <q-btn label="打开" @click="open(url)"></q-btn>
+          <q-btn label="复制" @click="$copy(url)"></q-btn>
+          <q-btn label="打开" @click="$open(url)"></q-btn>
         </div>
         <div class="row">
           <div class="col-1 q-gutter-xs">
@@ -53,7 +53,6 @@
 </template>
 
 <script>
-import { openURL, copyToClipboard } from 'quasar'
 export default {
   data() {
     return {
@@ -66,18 +65,6 @@ export default {
     this.url = this.$store.state.companyInfo.company_url
   },
   methods: {
-    open(url) {
-      openURL(url)
-    },
-    copy(url) {
-      copyToClipboard(url).then(() => {
-        this.$q.notify({
-          color: 'positive',
-          icon: 'assignment_turned_in',
-          message: '复制成功！'
-        })
-      })
-    },
     paste() {
       navigator.clipboard.readText().then(clipText => {
         this.editor += clipText
@@ -104,7 +91,7 @@ export default {
     },
     submit() {
       // Already HTMLEncoded
-      console.log(this.editor)
+      //console.log(this.editor)
       this.$axios
         .post(
           `company/company_content?company_content=${this.editor}&hours=${
@@ -113,11 +100,7 @@ export default {
         )
         .then(res => {
           if (res) {
-            this.$q.notify({
-              color: 'positive',
-              icon: 'check_circle',
-              message: '更新成功！'
-            })
+            this.$success('更新')
           }
         })
     },
@@ -131,11 +114,7 @@ export default {
         .onOk(() => {
           this.$axios.post('company/closeContent').then(res => {
             if (res) {
-              this.$q.notify({
-                color: 'positive',
-                icon: 'check_circle',
-                message: '封盘成功！'
-              })
+              this.$success('封盘')
             }
           })
         })

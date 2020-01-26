@@ -21,7 +21,7 @@
           <div class="row">
             <div class="col">
               <q-img
-                :src="logo"
+                :src="$head + company.company_logo"
                 class="rounded-borders"
                 style="max-width: 150px"
               >
@@ -90,7 +90,6 @@
 export default {
   data() {
     return {
-      head: 'http://47.100.30.181:8091/',
       company: {
         company_name: '',
         company_product: '',
@@ -141,19 +140,11 @@ export default {
           en: 'company_fax',
           ch: '公司传真'
         }
-      ],
-      logo: '../statics/app-logo-128x128.png'
+      ]
     }
   },
-  mounted: function() {
+  mounted() {
     this.company = { ...this.$store.state.companyInfo }
-    this.logo = this.head + this.company.company_logo
-  },
-  watch: {
-    '$store.state.companyInfo': function() {
-      this.company = { ...this.$store.state.companyInfo }
-      this.logo = this.head + this.company.company_logo
-    }
   },
   methods: {
     submit() {
@@ -165,11 +156,7 @@ export default {
         })
         .then(res => {
           if (res) {
-            this.$q.notify({
-              color: 'positive',
-              icon: 'check_circle',
-              message: '更新成功！'
-            })
+            this.$success('更新')
           }
         })
       this.$refs.logo.upload()
@@ -177,11 +164,7 @@ export default {
       this.$refs.license.upload()
     },
     uploadFailed() {
-      this.$q.notify({
-        color: 'negative',
-        icon: 'error',
-        message: '图片上传出错...'
-      })
+      this.$fail('图片上传出错...')
     }
   }
 }

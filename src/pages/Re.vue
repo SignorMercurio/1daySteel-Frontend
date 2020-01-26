@@ -91,16 +91,8 @@
               label="现货公司账号"
             ></q-radio>
           </div>
-          <q-input
-            dense
-            v-if="$route.query.type === 'gister'"
-            v-model="rData.invite_username"
-            label="推荐人手机号"
-            lazy-rules
-            :rules="[]"
-          ></q-input>
 
-          <div>
+          <div class="q-mt-sm">
             <q-btn
               push
               class="full-width"
@@ -150,8 +142,8 @@ export default {
         username: '',
         verifyCode: '',
         password: '',
-        accountType: '',
-        invite_username: ''
+        accountType: '0',
+        invite_username: this.$route.query.invite
       },
 
       newPass: '',
@@ -204,11 +196,7 @@ export default {
                   })
               })
               .onCancel(() => {
-                this.$q.notify({
-                  color: 'negative',
-                  icon: 'error',
-                  message: res.data.msg
-                })
+                this.$fail(res.data.msg)
               })
           } else {
             this.ok2login('注册成功！')
@@ -258,11 +246,7 @@ export default {
       })
     },
     ok2login(msg) {
-      this.$q.notify({
-        color: 'positive',
-        icon: 'check_circle',
-        message: msg
-      })
+      this.$success(msg)
       setTimeout(() => {
         this.$router.push('/auth/login')
       }, 500)

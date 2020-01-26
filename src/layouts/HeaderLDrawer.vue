@@ -168,31 +168,26 @@ export default {
     }
   },
   created: function() {
-    console.log(this.$route.path)
-    if (this.$q.sessionStorage.has('userInfo')) {
-      let info = this.$q.sessionStorage.getItem('userInfo')
-      this.$store.dispatch('Login', info)
-      this.$store.dispatch('getFavList')
-
-      if (info.type !== 0) {
-        this.menuList.push(
-          {
-            icon: 'update',
-            label: '更新报价',
-            route: '/update'
-          },
-          {
-            icon: 'info',
-            label: '基础信息',
-            route: '/info'
-          },
-          {
-            icon: 'how_to_reg',
-            label: '会员中心',
-            route: '/member'
-          }
-        )
-      }
+    //console.log(this.$route.path)
+    let info = this.$store.state.userInfo
+    if (info && info.type !== 0) {
+      this.menuList.push(
+        {
+          icon: 'update',
+          label: '更新报价',
+          route: '/update'
+        },
+        {
+          icon: 'info',
+          label: '基础信息',
+          route: '/info'
+        },
+        {
+          icon: 'how_to_reg',
+          label: '会员中心',
+          route: '/member'
+        }
+      )
     }
   },
   methods: {

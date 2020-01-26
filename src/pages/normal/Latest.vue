@@ -25,7 +25,7 @@
               <q-btn color="primary" @click="like(props.row.company_url)"
                 >收藏</q-btn
               >
-              <q-btn @click="copy(props.row.company_url)">复制</q-btn>
+              <q-btn @click="$copy(props.row.company_url)">复制</q-btn>
               <q-btn>提醒更新</q-btn>
             </q-td>
           </template>
@@ -59,7 +59,7 @@
               <q-btn color="primary" @click="like(props.row.company_url)"
                 >收藏</q-btn
               >
-              <q-btn @click="copy(props.row.company_url)">复制</q-btn>
+              <q-btn @click="$copy(props.row.company_url)">复制</q-btn>
               <q-btn>提醒更新</q-btn>
             </q-td>
           </template>
@@ -111,7 +111,6 @@
 </template>
 
 <script>
-import { copyToClipboard } from 'quasar'
 export default {
   data() {
     return {
@@ -290,23 +289,10 @@ export default {
         .post(`collection?company_url=${this.likeId}&group_name=${this.group}`)
         .then(res => {
           if (res) {
-            this.$q.notify({
-              color: 'positive',
-              icon: 'star',
-              message: '收藏成功!'
-            })
+            this.$success('收藏', 'star')
             this.$store.dispatch('getFavList')
           }
         })
-    },
-    copy(url) {
-      copyToClipboard(url).then(() => {
-        this.$q.notify({
-          color: 'positive',
-          icon: 'assignment_turned_in',
-          message: '复制成功！'
-        })
-      })
     }
   }
 }

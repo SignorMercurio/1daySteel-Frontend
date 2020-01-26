@@ -6,32 +6,32 @@ const routes = [
       { path: '', component: () => import('pages/Home.vue') },
       {
         path: 'fav',
-        component: () => import('pages/Fav.vue'),
+        component: () => import('pages/normal/Fav.vue'),
         meta: { auth: true }
       },
       {
         path: 'me',
-        component: () => import('pages/Me.vue'),
+        component: () => import('pages/normal/Me.vue'),
         meta: { auth: true }
       },
       {
         path: 'info',
-        component: () => import('pages/Info.vue'),
+        component: () => import('pages/company/Info.vue'),
         meta: { auth: true }
       },
       {
         path: 'update',
-        component: () => import('pages/Update.vue'),
+        component: () => import('pages/company/Update.vue'),
         meta: { auth: true }
       },
       {
         path: 'member',
-        component: () => import('pages/Member.vue'),
+        component: () => import('pages/company/Member.vue'),
         meta: { auth: true }
       },
       {
         path: 'latest',
-        component: () => import('pages/Latest.vue'),
+        component: () => import('pages/normal/Latest.vue'),
         meta: { auth: true }
       },
       {
@@ -47,6 +47,11 @@ const routes = [
       { path: 'login', component: () => import('pages/Login.vue') },
       { path: 're', component: () => import('pages/Re.vue') }
     ]
+  },
+  {
+    path: '/pages/:id',
+    component: () => import('layouts/HeaderOnly.vue'),
+    children: [{ path: '', component: () => import('pages/company/Page.vue') }]
   }
 ]
 

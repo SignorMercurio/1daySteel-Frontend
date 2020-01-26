@@ -19,7 +19,7 @@
         >
           <template v-slot:body-cell-op="props">
             <q-td :props="props" class="q-gutter-sm">
-              <q-btn @click="open(props.row.company_url)">详情</q-btn>
+              <q-btn @click="$open(props.row.company_url)">详情</q-btn>
             </q-td>
           </template>
         </q-table>
@@ -109,7 +109,7 @@ export default {
         )
         .then(res => {
           if (res) {
-            console.log(res)
+            //console.log(res)
             this.data = res.data.data.items
             this.pagination = {
               page: res.data.data.pageNum,
@@ -119,8 +119,7 @@ export default {
             this.loading = false
           }
         })
-    },
-    open(url) {}
+    }
   }
 }
 </script>

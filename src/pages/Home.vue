@@ -20,7 +20,12 @@
         <div class="text-subtitle2">公司主页今日访问次数：{{ today }}</div>
         <div class="text-subtitle2">公司主页总访问次数：{{ total }}</div>
         <template v-slot:action>
-          <q-btn flat color="primary" label="打开公司主页"></q-btn>
+          <q-btn
+            flat
+            color="primary"
+            label="打开公司主页"
+            @click="$open($store.state.companyInfo.company_url)"
+          ></q-btn>
         </template>
       </q-banner>
     </div>
@@ -300,11 +305,7 @@ export default {
         .post(`collection?company_url=${this.likeId}&group_name=${this.group}`)
         .then(res => {
           if (res) {
-            this.$q.notify({
-              color: 'positive',
-              icon: 'star',
-              message: '收藏成功!'
-            })
+            this.$success('收藏', 'star')
             this.$store.dispatch('getFavList')
           }
         })

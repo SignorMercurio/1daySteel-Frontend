@@ -16,6 +16,16 @@
             用户名：{{ $store.state.userInfo.username }}
           </div>
           <div class="text-h6">总积分：{{ memberInfo.point }}</div>
+          <div class="text-subtitle1">推荐好友注册：</div>
+          <div class="text-subtitle1 text-primary">
+            <span>{{ url }}</span>
+            <q-btn
+              class="q-ml-md"
+              color="primary"
+              label="复制"
+              @click="$copy(url)"
+            ></q-btn>
+          </div>
           <template v-slot:action>
             <q-btn
               flat
@@ -50,6 +60,9 @@ export default {
         if_member: null,
         expire_time: null
       },
+      url:
+        'http://localhost:8080/#/auth/re?type=gister&invite=' +
+        this.$store.state.userInfo.username,
       data: [],
       columns: [
         {

@@ -91,7 +91,7 @@ export default {
     exchange() {
       this.$q
         .dialog({
-          title: '请输入充值会员时长（月）',
+          title: '请输入兑换会员时长（月）',
           prompt: {
             model: '',
             type: 'number'
@@ -101,11 +101,7 @@ export default {
         .onOk(data => {
           this.$axios.get(`member/exchangeMember?month=${data}`).then(res => {
             if (res) {
-              this.$q.notify({
-                color: 'positive',
-                icon: 'check_circle',
-                message: '兑换成功!'
-              })
+              this.$success('兑换')
               setTimeout(() => {
                 this.reload()
               }, 500)

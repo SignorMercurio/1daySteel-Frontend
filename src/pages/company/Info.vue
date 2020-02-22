@@ -21,7 +21,7 @@
           <div class="row">
             <div class="col">
               <q-img
-                :src="$head + company.company_logo"
+                :src="logo"
                 class="rounded-borders"
                 style="max-width: 150px"
               >
@@ -35,10 +35,10 @@
                 accept="image/*"
                 with-credentials
                 hide-upload-btn
-                :url="head + 'company/logo'"
+                :url="$head + 'company/logo'"
                 method="PUT"
                 field-name="logo"
-                @failed="uploadFailed"
+                @failed="$fail('图片上传出错...')"
               ></q-uploader>
             </div>
           </div>
@@ -56,10 +56,10 @@
             accept="image/*"
             with-credentials
             hide-upload-btn
-            :url="head + 'company/authorization'"
+            :url="$head + 'company/authorization'"
             method="PUT"
             field-name="authorization"
-            @failed="uploadFailed"
+            @failed="$fail('图片上传出错...')"
           ></q-uploader>
           <q-uploader
             label="上传营业执照"
@@ -67,10 +67,10 @@
             accept="image/*"
             with-credentials
             hide-upload-btn
-            :url="head + 'company/license'"
+            :url="$head + 'company/license'"
             method="PUT"
             field-name="license"
-            @failed="uploadFailed"
+            @failed="$fail('图片上传出错...')"
           ></q-uploader>
           <div>
             <q-btn
@@ -140,34 +140,46 @@ export default {
           en: 'company_fax',
           ch: '公司传真'
         }
-      ]
+      ],
+      logo: 'statics/app-logo.jpg'
     }
   },
   mounted() {
-    this.company = { ...this.$store.state.companyInfo }
+    this.company = {
+      ...this.$store.getters.getCompanyInfo
+    }
+    let { company_logo } = this.company
+    if (company_logo) this.logo = this.$head + company_logo
   },
   methods: {
     submit() {
       this.$axios
-        .post('company', this.company, {
-          headers: {
-            'Content-Type': 'application/json'
+        .post(
+          'company',
+          {
+            ...this.company,
+            company_url: this.$base_url + `pages/${this.company.id}`
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json'
+            }
           }
-        })
+        )
         .then(res => {
           if (res) {
             this.$success('更新')
+            this.$store.dispatch(
+              'getCompany',
+              this.$store.getters.getUserInfo.id
+            )
           }
         })
-      this.$refs.logo.upload()
-      this.$refs.auth.upload()
-      this.$refs.license.upload()
-    },
-    uploadFailed() {
-      this.$fail('图片上传出错...')
+      let { logo, auth, license } = this.$refs
+      logo.upload()
+      auth.upload()
+      license.upload()
     }
   }
 }
 </script>
-
-<style lang="sass" scoped></style>

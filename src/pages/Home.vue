@@ -7,69 +7,117 @@
         style="width: 400px; height: 128px"
       />
     </div>
-    <div v-if="userType === 1" class="fit row q-ml-md q-mr-md">
-      <q-banner rounded class="col bg-grey-3">
-        <template v-slot:avatar>
-          <q-icon name="web_asset" color="primary"></q-icon>
-        </template>
-        <div class="text-h6">您的专属网址：</div>
-        <div class="text-h6 text-primary">
-          {{ $store.state.companyInfo.company_url }}
-        </div>
-        <br />
-        <div class="text-subtitle2">公司主页今日访问次数：{{ today }}</div>
-        <div class="text-subtitle2">公司主页总访问次数：{{ total }}</div>
-        <template v-slot:action>
-          <q-btn
-            flat
-            color="primary"
-            label="打开公司主页"
-            @click="$open($store.state.companyInfo.company_url)"
-          ></q-btn>
-        </template>
-      </q-banner>
-    </div>
 
-    <div
-      v-if="userType === 0"
-      class="fit row justify-around no-wrap q-pa-sm q-gutter-x-sm"
-    >
-      <div class="col">
+    <div class="fit column q-pa-md q-gutter-y-lg">
+      <div>
+        <q-input
+          dense
+          outlined
+          placeholder="请输入搜索关键字..."
+          v-model="searchText"
+          debounce="1000"
+          class="q-ml-md q-mr-md"
+        >
+          <template v-slot:append>
+            <q-icon v-if="searchText === ''" name="search" />
+            <q-icon
+              v-else
+              name="clear"
+              class="cursor-pointer"
+              @click="searchText = ''"
+            />
+          </template>
+        </q-input>
+      </div>
+      <div>
         <q-table
           title="会员报价"
           dense
-          :data="data0"
+          :data="table0.data"
           :columns="columns0"
           row-key="id"
-          :pagination.sync="pagination0"
-          :loading="loading0"
+          :pagination.sync="table0.pagination"
+          :loading="table0.loading"
           @request="getMemberList"
+          ref="table0"
         >
           <template v-slot:body-cell-op="props">
             <q-td :props="props">
-              <q-btn flat color="primary" @click="like(props.row.company_url)"
+              <q-btn flat color="primary" @click="like(props.row.id)"
                 >收藏</q-btn
               >
             </q-td>
           </template>
+          <template v-slot:body-cell-companyName="props">
+            <q-td :props="props">
+              <q-btn
+                no-caps
+                flat
+                :label="props.value"
+                @click="$open(props.row.company_url)"
+              ></q-btn>
+            </q-td>
+          </template>
         </q-table>
       </div>
-      <div class="col-auto">
+      <div class="row no-wrap q-gutter-x-md">
         <q-table
+          class="col"
           title="非会员报价"
           dense
-          :data="data1"
+          :data="table1.data"
           :columns="columns1"
           row-key="id"
-          :pagination.sync="pagination1"
-          :loading="loading1"
-          @request="getNonMemberList"
+          :pagination.sync="table1.pagination"
+          :loading="table1.loading"
+          @request="getNonMemberListLeft"
+          ref="table1"
         >
           <template v-slot:body-cell-op="props">
             <q-td :props="props">
-              <q-btn flat color="primary" @click="like(props.row.company_url)"
+              <q-btn flat color="primary" @click="like(props.row.id)"
                 >收藏</q-btn
               >
+            </q-td>
+          </template>
+          <template v-slot:body-cell-companyName="props">
+            <q-td :props="props">
+              <q-btn
+                no-caps
+                flat
+                :label="props.value"
+                @click="$open(props.row.company_url)"
+              ></q-btn>
+            </q-td>
+          </template>
+        </q-table>
+        <q-table
+          class="col"
+          title="非会员报价"
+          dense
+          :data="table2.data"
+          :columns="columns1"
+          row-key="id"
+          :pagination.sync="table2.pagination"
+          :loading="table2.loading"
+          @request="getNonMemberListRight"
+          ref="table2"
+        >
+          <template v-slot:body-cell-op="props">
+            <q-td :props="props">
+              <q-btn flat color="primary" @click="like(props.row.id)"
+                >收藏</q-btn
+              >
+            </q-td>
+          </template>
+          <template v-slot:body-cell-companyName="props">
+            <q-td :props="props">
+              <q-btn
+                no-caps
+                flat
+                :label="props.value"
+                @click="$open(props.row.company_url)"
+              ></q-btn>
             </q-td>
           </template>
         </q-table>
@@ -123,9 +171,7 @@ export default {
           name: 'companyName',
           label: '公司名',
           align: 'center',
-          field: 'company_name',
-          style: 'max-width: 150px',
-          classes: 'ellipsis'
+          field: 'company_name'
         },
         {
           name: 'mainProd',
@@ -156,7 +202,8 @@ export default {
           align: 'center',
           field: 'company_content',
           style: 'max-width: 150px',
-          classes: 'ellipsis'
+          classes: 'ellipsis',
+          format: val => val.replace(/<.*>/g, ' ') // 不显示html标签
         },
         {
           name: 'op',
@@ -176,9 +223,7 @@ export default {
           name: 'companyName',
           label: '公司名',
           align: 'center',
-          field: 'company_name',
-          style: 'max-width: 150px',
-          classes: 'ellipsis'
+          field: 'company_name'
         },
         {
           name: 'valid',
@@ -194,95 +239,91 @@ export default {
           field: 'op'
         }
       ],
-      data0: [],
-      data1: [],
-      loading0: true,
-      loading1: true,
-      chooseGroup: false,
+      chooseGroup: false, // 收藏对话框
       group: '默认分组',
       groupOptions: [],
       newGroup: '',
       likeId: null,
-      pagination0: {
-        page: 1,
-        rowsPerPage: 30,
-        rowsNumber: 30
+      table0: {
+        loading: true,
+        data: [],
+        pagination: {
+          page: 1,
+          rowsPerPage: 20,
+          rowsNumber: 30
+        }
       },
-      pagination1: {
-        page: 1,
-        rowsPerPage: 30,
-        rowsNumber: 30
+      table1: {
+        loading: true,
+        data: [],
+        pagination: {
+          page: 1,
+          rowsPerPage: 20,
+          rowsNumber: 30
+        }
       },
-      userType: 0,
-      today: 0,
-      total: 0
+      table2: {
+        loading: true,
+        data: [],
+        pagination: {
+          page: 2,
+          rowsPerPage: 20,
+          rowsNumber: 30
+        }
+      },
+      type: 0, // 账户类型
+      searchText: ''
     }
   },
   mounted: function() {
-    let info = this.$store.state.userInfo
-    if (!info) {
-      this.getMemberList()
-      this.getNonMemberList()
-    } else {
-      this.groupOptions = this.$store.state.fav.concat(['新建分组...'])
-      this.userType = info.type
+    let { table0, table1, table2 } = this.$refs
+    table0.requestServerInteraction()
+    table1.requestServerInteraction()
+    table2.requestServerInteraction()
 
-      if (info.type === 0) {
-        this.getMemberList()
-        this.getNonMemberList()
-      } else {
-        this.total = this.$store.state.companyInfo.company_browse_num
-        this.$axios
-          .get(`visit/today_times/${this.$store.state.companyInfo.id}`)
-          .then(res => {
-            this.today = res.data.data
-          })
+    let { getUserInfo, getCompanyInfo, getFav } = this.$store.getters
+    if (getUserInfo) {
+      this.groupOptions = getFav.concat(['新建分组...'])
+      this.type = getUserInfo.type
+
+      if (this.type === 1) {
+        let { company_browse_num, id, company_url } = getCompanyInfo
+        this.url = company_url
+        this.total = company_browse_num
+        this.$axios.get(`visit/today_times/${id}`).then(res => {
+          this.today = res.data.data
+        })
       }
     }
   },
+  watch: {
+    searchText: function(newVal) {
+      if (newVal === '') {
+        if (this.$route.path === '/search') {
+          // 清空，则取消搜索
+          this.$router.back(-1)
+        }
+      } else {
+        if (this.$route.path !== '/search') {
+          // 在其它页面，则跳转到搜索页
+          this.$router.push('/search')
+        } // 已经在搜索页，只需要改变keyword
+      }
+      this.$store.commit('setKeyword', this.searchText)
+    }
+  },
   methods: {
-    getMemberList(props = { pagination: this.pagination0 }) {
-      this.loading0 = true
-      this.$axios
-        .get(
-          `homepage/members?pageNum=${props.pagination.page}&pageSize=${
-            props.pagination.rowsPerPage
-          }`
-        )
-        .then(res => {
-          if (res) {
-            this.data0 = res.data.data.items
-            this.pagination0 = {
-              page: res.data.data.pageNum,
-              rowsPerPage: res.data.data.pageSize,
-              rowsNumber: res.data.data.total
-            }
-            this.loading0 = false
-          }
-        })
+    getMemberList(props) {
+      this.$getList(props, 'homepage/members?', this.table0)
     },
-    getNonMemberList(props = { pagination: this.pagination1 }) {
-      this.loading1 = true
-      this.$axios
-        .get(
-          `homepage/notMembers?pageNum=${props.pagination.page}&pageSize=${
-            props.pagination.rowsPerPage
-          }`
-        )
-        .then(res => {
-          if (res) {
-            this.data1 = res.data.data.items
-            this.pagination1 = {
-              page: res.data.data.pageNum,
-              rowsPerPage: res.data.data.pageSize,
-              rowsNumber: res.data.data.total
-            }
-            this.loading1 = false
-          }
-        })
+    getNonMemberListLeft(props) {
+      this.$getList(props, 'homepage/notMembers?', this.table1)
+    },
+    getNonMemberListRight(props) {
+      this.$getList(props, 'homepage/notMembers?', this.table2)
     },
     like(id) {
-      if (this.$store.state.userInfo) {
+      if (this.$store.getters.getUserInfo) {
         this.likeId = id
         this.chooseGroup = true
       } else {
@@ -302,20 +343,14 @@ export default {
         this.group = this.newGroup
       }
       this.$axios
-        .post(`collection?company_url=${this.likeId}&group_name=${this.group}`)
+        .post(`collection?company_id=${this.likeId}&group_name=${this.group}`)
         .then(res => {
           if (res) {
             this.$success('收藏', 'star')
-            this.$store.dispatch('getFavList')
+            this.$store.dispatch('getFavList') // 重新加载收藏列表
           }
         })
     }
   }
 }
 </script>
-
-<style lang="sass" scoped>
-.dialog
-  width: 95%
-  max-width: 300px
-</style>

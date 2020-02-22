@@ -20,7 +20,7 @@
             <q-item
               clickable
               v-close-popup
-              v-for="item in $store.state.fav"
+              v-for="item in $store.getters.getFav"
               :key="item"
               @click="group = item"
             >
@@ -41,16 +41,17 @@
         <q-table
           :title="group"
           dense
-          :data="data"
+          :data="table.data"
           :columns="columns"
           row-key="id"
-          :pagination.sync="pagination"
-          :loading="loading"
+          :pagination.sync="table.pagination"
+          :loading="table.loading"
           @request="getList"
+          ref="table"
         >
           <template v-slot:body-cell-op="props">
             <q-td :props="props" class="q-gutter-sm">
-              <q-btn>提醒更新</q-btn>
+              <q-btn @click="$remind(props.row.company_id)">提醒更新</q-btn>
               <q-btn
                 v-if="props.row.order === 1"
                 color="primary"
@@ -64,6 +65,16 @@
               >
             </q-td>
           </template>
+          <template v-slot:body-cell-companyName="props">
+            <q-td :props="props">
+              <q-btn
+                no-caps
+                flat
+                :label="props.value"
+                @click="$open(props.row.company_url)"
+              ></q-btn>
+            </q-td>
+          </template>
         </q-table>
       </div>
     </div>
@@ -75,7 +86,6 @@ export default {
   data() {
     return {
       group: '默认分组',
-      data: [],
       columns: [
         {
           name: 'id',
@@ -116,8 +126,16 @@ export default {
           label: '报价时间',
           align: 'center',
           field: 'add_time',
-          format: val =>
-            new Date(val).toLocaleString('chinese', { hour12: false })
+          format: val => this.$formatTime(val)
+        },
+        {
+          name: 'content',
+          label: '报价内容',
+          align: 'center',
+          field: 'company_content',
+          style: 'max-width: 150px',
+          classes: 'ellipsis',
+          format: val => (val ? val.replace(/<.*>/g, ' ') : val)
         },
         {
           name: 'op',
@@ -126,51 +144,41 @@ export default {
           field: 'op'
         }
       ],
-      loading: true,
-      pagination: {
-        page: 1,
-        rowsPerPage: 30,
-        rowsNumber: 30
+      table: {
+        data: [],
+        loading: true,
+        pagination: {
+          page: 1,
+          rowsPerPage: 20,
+          rowsNumber: 30
+        }
       }
     }
   },
   watch: {
     group: function() {
-      this.getList()
+      this.$refs.table.requestServerInteraction()
     }
   },
   mounted: function() {
-    this.getList()
+    this.$refs.table.requestServerInteraction()
   },
   methods: {
-    getList(props = { pagination: this.pagination }) {
-      this.loading = true
-      this.$axios
-        .get(
-          `collection/detail?group_name=${this.group}&pageNum=${
-            props.pagination.page
-          }&pageSize=${props.pagination.rowsPerPage}`
-        )
-        .then(res => {
-          if (res) {
-            this.data = res.data.data.items
-            this.pagination = {
-              page: res.data.data.pageNum,
-              rowsPerPage: res.data.data.pageSize,
-              rowsNumber: res.data.data.total
-            }
-            this.loading = false
-          }
-        })
+    getList(props) {
+      this.$getList(
+        props,
+        `collection/detail?group_name=${this.group}&`,
+        this.table
+      )
     },
     top(id) {
       this.$axios.post(`collection/setTop?collection_id=${id}`).then(res => {
-        if (res) this.getList()
+        if (res) this.$refs.table.requestServerInteraction()
       })
     },
     untop(id) {
       this.$axios.post(`collection/removeTop?collection_id=${id}`).then(res => {
-        if (res) this.getList()
+        if (res) this.$refs.table.requestServerInteraction()
       })
     },
     del(id) {
@@ -186,7 +194,7 @@ export default {
             .then(res => {
               if (res) {
                 this.$success('删除')
-                this.getList()
+                this.$refs.table.requestServerInteraction()
               }
             })
         })
@@ -214,12 +222,10 @@ export default {
         .get(`collection/company_url?collection_id=${id}`)
         .then(res => {
           if (res) {
-            window.open(res.data.data.company_url)
+            this.$open(res.data.data.company_url)
           }
         })
     }
   }
 }
 </script>
-
-<style lang="sass" scoped></style>

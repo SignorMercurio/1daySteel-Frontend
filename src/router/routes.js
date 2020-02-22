@@ -5,6 +5,11 @@ const routes = [
     children: [
       { path: '', component: () => import('pages/Home.vue') },
       {
+        path: 'home',
+        component: () => import('pages/normal/Panel.vue'),
+        meta: { auth: true }
+      },
+      {
         path: 'fav',
         component: () => import('pages/normal/Fav.vue'),
         meta: { auth: true }

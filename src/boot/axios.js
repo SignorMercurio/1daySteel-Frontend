@@ -10,7 +10,8 @@ Vue.prototype.$axios = axios.create({
 
 Vue.prototype.$axios.interceptors.response.use(
   res => {
-    if (res.data.code && res.data.code !== 0 && res.data.code !== 1008) {
+    // 1008：账号升级，已废弃
+    if (res.data.code && res.data.code !== 0 /*&& res.data.code !== 1008*/) {
       //console.log(res)
       Vue.prototype.$q.notify({
         color: 'negative',

@@ -2,7 +2,7 @@
   "name": "one_day_steel",
   "version": "0.0.1",
   "description": "A Quasar Framework app",
-  "productName": "Quasar App",
+  "productName": "一天钢铁",
   "cordovaId": "org.cordova.quasar.app",
   "capacitorId": "",
   "author": "SignorMercurio <936581211@qq.com>",
@@ -10,16 +10,18 @@
   "scripts": {
     "lint": "eslint --ext .js,.vue src",
     "test": "echo \"No test specified\" && exit 0",
-    "webdev": "quasar dev"
+    "webdev": "quasar dev",
+    "start": "quasar build"
   },
   "dependencies": {
-    "@quasar/extras": "^1.0.0",
+    "@quasar/cli": "^1.0.5",
+    "@quasar/extras": "^1.5.0",
     "axios": "^0.18.1",
-    "quasar": "^1.5.11",
+    "quasar": "^1.8.3",
     "serialize-javascript": "^2.1.2"
   },
   "devDependencies": {
-    "@quasar/app": "^1.0.0",
+    "@quasar/app": "^1.5.2",
     "@vue/eslint-config-prettier": "^4.0.0",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.10.0",

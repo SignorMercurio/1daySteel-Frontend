@@ -3,14 +3,14 @@
     <q-card class="login-card">
       <q-card-section>
         <div class="text-center">
-          <img src="statics/app-logo-128x128.png" alt="Logo" />
+          <q-icon name="img:statics/app-logo.jpg" size="xl" />
         </div>
       </q-card-section>
 
       <q-tab-panel name="register">
         <q-form
           @submit="$route.query.type === 'gister' ? register() : retrieve()"
-          class="q-pa-xs q-gutter-xs"
+          class="q-pa-md q-gutter-xs"
         >
           <q-input
             dense
@@ -73,10 +73,10 @@
               />
             </template>
           </q-input>
-
+          <!-- 账号类型，已废弃
           <div
             v-if="$route.query.type === 'gister'"
-            class="q-pa-xs q-gutter-md"
+            class="q-pa-sm q-gutter-md"
           >
             <q-radio
               dense
@@ -90,9 +90,9 @@
               val="1"
               label="现货公司账号"
             ></q-radio>
-          </div>
+          </div>-->
 
-          <div class="q-mt-sm">
+          <div class="q-mt-md">
             <q-btn
               push
               class="full-width"
@@ -142,15 +142,15 @@ export default {
         username: '',
         verifyCode: '',
         password: '',
-        accountType: '0',
+        accountType: '1',
         invite_username: this.$route.query.invite
       },
 
       newPass: '',
-      passV: false,
-      newPassV: false,
+      passV: false, // 密码是否可见
+      newPassV: false, // 确认密码是否可见
       picVeriDialog: false,
-      picVeri: '',
+      picVeri: '', // 存储验证图片
       picVCode: ''
     }
   },
@@ -158,6 +158,7 @@ export default {
     register() {
       this.$axios.post('signUp', this.$qs.stringify(this.rData)).then(res => {
         if (res) {
+          /* 个人升级公司，已废弃
           if (res.data.code === 1008) {
             this.$q
               .dialog({
@@ -188,7 +189,7 @@ export default {
                         if (res) {
                           this.$axios.put('auth').then(res => {
                             if (res) {
-                              this.ok2login('账号升级成功！')
+                              this.ok2login('账号升级')
                             }
                           })
                         }
@@ -196,11 +197,11 @@ export default {
                   })
               })
               .onCancel(() => {
-                this.$fail(res.data.msg)
+                this.$fail(res.data.msg) // 注册失败
               })
-          } else {
-            this.ok2login('注册成功！')
-          }
+          } else { */
+          this.ok2login('注册')
+          //}
         }
       })
     },
@@ -230,18 +231,14 @@ export default {
         .get(url + `?kaptcha=${this.picVCode}&username=${this.rData.username}`)
         .then(res => {
           if (res) {
-            this.$q.notify({
-              color: 'positive',
-              icon: 'send',
-              message: '验证码已发送'
-            })
+            this.$success('验证码发送', 'send')
           }
         })
     },
     retrieve() {
       this.$axios.put('password', this.$qs.stringify(this.rData)).then(res => {
         if (res) {
-          this.ok2login('密码重置成功！')
+          this.ok2login('密码重置')
         }
       })
     },
@@ -254,9 +251,3 @@ export default {
   }
 }
 </script>
-
-<style lang="sass" scoped>
-.dialog
-  width: 95%
-  max-width: 400px
-</style>

@@ -23,7 +23,8 @@ export default function(/* { store, ssrContext } */) {
 
   Router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.auth)) {
-      if (!sessionStorage.getItem('store')) {
+      let store = JSON.parse(sessionStorage.getItem('store'))
+      if (!store || !store.userInfo) {
         Vue.prototype.$q.notify({
           color: 'warning',
           icon: 'warning',

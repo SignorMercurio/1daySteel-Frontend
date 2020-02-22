@@ -3,7 +3,7 @@
     <q-card class="login-card">
       <q-card-section>
         <div class="text-center">
-          <img src="statics/app-logo-128x128.png" alt="Logo" />
+          <q-icon name="img:statics/app-logo.jpg" size="xl" />
         </div>
       </q-card-section>
 
@@ -45,18 +45,12 @@
               color="primary"
             />
           </div>
-
-          <div class="flex">
-            <q-btn
-              label="注册新账户"
-              flat
-              color="primary"
-              to="re?type=gister"
-            />
-            <q-space></q-space>
-            <q-btn label="找回密码" flat color="primary" to="re?type=trieve" />
-          </div>
         </q-form>
+        <div class="flex">
+          <q-btn label="注册新账户" flat color="primary" to="re?type=gister" />
+          <q-space></q-space>
+          <q-btn label="找回密码" flat color="primary" to="re?type=trieve" />
+        </div>
       </q-tab-panel>
     </q-card>
   </q-page>
@@ -98,5 +92,3 @@ export default {
   }
 }
 </script>
-
-<style lang="sass" scoped></style>

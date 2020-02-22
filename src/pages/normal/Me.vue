@@ -13,19 +13,33 @@
             <q-icon name="person" color="primary"></q-icon>
           </template>
           <div class="text-h6">
-            用户名：{{ $store.state.userInfo.username }}
+            用户名：{{ $store.getters.getUserInfo.username }}
           </div>
-          <div class="text-h6">总积分：{{ memberInfo.point }}</div>
-          <div class="text-subtitle1">推荐好友注册：</div>
-          <div class="text-subtitle1 text-primary">
-            <span>{{ url }}</span>
-            <q-btn
-              class="q-ml-md"
-              color="primary"
-              label="复制"
-              @click="$copy(url)"
-            ></q-btn>
-          </div>
+          <!-- 管理员没有这一块 -->
+          <template v-if="type === 1">
+            <div class="text-h6">总积分：{{ point }}</div>
+            <div class="text-subtitle1">
+              公司名称：{{ company.company_name }}
+              <br />
+              公司网址：<span class="text-primary">{{
+                company.company_url
+              }}</span>
+              <br />
+              推荐好友注册：<span class="text-primary">{{ url }}</span>
+              <q-btn
+                class="q-ml-md"
+                color="primary"
+                label="复制"
+                @click="
+                  $copy(
+                    `公司名称：${company.company_name}\n公司网址：${
+                      company.company_url
+                    }\n推荐好友注册：${url}`
+                  )
+                "
+              ></q-btn>
+            </div>
+          </template>
           <template v-slot:action>
             <q-btn
               flat
@@ -37,13 +51,15 @@
         </q-banner>
 
         <q-table
+          v-if="type === 1"
           title="消息提醒"
-          :data="data"
+          :data="table.data"
           :columns="columns"
           row-key="id"
-          :pagination.sync="pagination"
-          :loading="loading"
+          :pagination.sync="table.pagination"
+          :loading="table.loading"
           @request="getList"
+          ref="table"
         ></q-table>
       </div>
     </div>
@@ -54,16 +70,13 @@
 export default {
   data() {
     return {
-      memberInfo: {
-        user_id: 0,
-        point: 0,
-        if_member: null,
-        expire_time: null
-      },
+      point: 0,
+      type: this.$store.getters.getUserInfo.type,
+      company: this.$store.getters.getCompanyInfo,
       url:
-        'http://localhost:8080/#/auth/re?type=gister&invite=' +
-        this.$store.state.userInfo.username,
-      data: [],
+        this.$base_url +
+        'auth/re?type=gister&invite=' +
+        this.$store.getters.getUserInfo.username,
       columns: [
         {
           name: 'id',
@@ -78,45 +91,35 @@ export default {
           field: 'content'
         }
       ],
-      loading: true,
-      pagination: {
-        page: 1,
-        rowsPerPage: 30,
-        rowsNumber: 30
+      table: {
+        data: [],
+        loading: true,
+        pagination: {
+          page: 1,
+          rowsPerPage: 20,
+          rowsNumber: 30
+        }
       }
     }
   },
   mounted: function() {
-    this.$axios.get('member').then(res => {
-      if (res) {
-        this.memberInfo = res.data.data
-      }
-    })
-    this.getList()
+    if (this.type === 1) {
+      // 个人用户没有积分，管理永久会员
+      this.$axios.get('member').then(res => {
+        if (res) {
+          let { point } = res.data.data
+          if (point) this.point = point
+        }
+      })
+      this.$refs.table.requestServerInteraction()
+    } else {
+      this.table.loading = false
+    }
   },
   methods: {
-    getList(props = { pagination: this.pagination }) {
-      this.loading = true
-      this.$axios
-        .get(
-          `member/message?pageNum=${props.pagination.page}&pageSize=${
-            props.pagination.rowsPerPage
-          }`
-        )
-        .then(res => {
-          if (res) {
-            this.data = res.data.data.items
-            this.pagination = {
-              page: res.data.data.pageNum,
-              rowsPerPage: res.data.data.pageSize,
-              rowsNumber: res.data.data.total
-            }
-            this.loading = false
-          }
-        })
+    getList(props) {
+      this.$getList(props, 'member/message?', this.table)
     }
   }
 }
 </script>
-
-<style lang="sass" scoped></style>

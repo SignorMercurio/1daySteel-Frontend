@@ -17,6 +17,8 @@ Vue.prototype.$copy = function(url) {
 
 Vue.prototype.$head = 'http://47.100.30.181:8091/'
 
+Vue.prototype.$base_url = 'http://47.100.30.181:8092/#/'
+
 Vue.prototype.$success = function(ops, icon = 'check_circle') {
   this.$q.notify({
     color: 'positive',
@@ -30,5 +32,36 @@ Vue.prototype.$fail = function(msg) {
     color: 'negative',
     icon: 'error',
     message: msg
+  })
+}
+
+Vue.prototype.$getList = function(props, url, table) {
+  table.loading = true
+  let { page, rowsPerPage } = props.pagination
+  this.$axios.get(url + `pageNum=${page}&pageSize=${rowsPerPage}`).then(res => {
+    if (res) {
+      let { items, pageNum, pageSize, total } = res.data.data
+      table.data = items
+      table.pagination = {
+        page: pageNum,
+        rowsPerPage: pageSize,
+        rowsNumber: total
+      }
+      table.loading = false
+    }
+  })
+}
+
+Vue.prototype.$formatTime = val => {
+  return (val ? new Date(val) : new Date()).toLocaleString('chinese', {
+    hour12: false
+  })
+}
+
+Vue.prototype.$remind = function(id) {
+  this.$axios.post(`message/content?id=${id}`).then(res => {
+    if (res) {
+      this.$success('提醒更新')
+    }
   })
 }

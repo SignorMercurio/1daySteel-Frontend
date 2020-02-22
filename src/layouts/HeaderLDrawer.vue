@@ -11,7 +11,7 @@
           class="q-mr-sm"
         />
         <q-avatar>
-          <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg" />
+          <img src="statics/app-logo.jpg" />
         </q-avatar>
         <q-toolbar-title>一天钢铁</q-toolbar-title>
         <q-space></q-space>
@@ -34,14 +34,18 @@
             />
           </template>
         </q-input>
-        <q-btn v-if="!$store.state.userInfo" flat icon="person" to="auth/login"
+        <q-btn
+          v-if="!$store.getters.getUserInfo"
+          flat
+          icon="person"
+          to="/auth/login"
           >登录</q-btn
         >
         <template v-else>
-          {{ $store.state.userInfo.username }}
+          {{ $store.getters.getUserInfo.username }}
           <q-btn class="q-ml-sm" round>
             <q-avatar>
-              <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg" />
+              <img :src="logo" />
             </q-avatar>
             <q-menu
               fit
@@ -49,19 +53,6 @@
               transition-hide="flip-left"
             >
               <q-list style="min-width:140px">
-                <q-item clickable v-close-popup>
-                  <q-item-section avatar>
-                    <q-icon color="primary" name="account_circle"></q-icon>
-                  </q-item-section>
-                  <q-item-section>账户</q-item-section>
-                </q-item>
-                <q-item clickable v-close-popup>
-                  <q-item-section avatar>
-                    <q-icon color="primary" name="settings"></q-icon>
-                  </q-item-section>
-                  <q-item-section>设置</q-item-section>
-                </q-item>
-                <q-separator></q-separator>
                 <q-item clickable v-close-popup @click="logout">
                   <q-item-section avatar>
                     <q-icon color="primary" name="logout"></q-icon>
@@ -80,7 +71,6 @@
       v-model="left"
       side="left"
       elevated
-      mini-to-overlay
       :mini="miniState"
       @mouseover="miniState = false"
       @mouseout="miniState = true"
@@ -89,19 +79,16 @@
         <q-list v-for="(menuItem, index) in menuList" :key="index">
           <q-item
             clickable
-            :active="link === menuItem.route"
+            :active="$route.path === menuItem.route"
             v-ripple
-            @click="
-              link = menuItem.route
-              $router.push(menuItem.route)
-            "
+            :to="menuItem.route"
+            exact
           >
             <q-item-section avatar>
               <q-icon :name="menuItem.icon" />
             </q-item-section>
             <q-item-section>{{ menuItem.label }}</q-item-section>
           </q-item>
-
           <q-separator v-if="menuItem.separator" />
         </q-list>
       </q-scroll-area>
@@ -125,12 +112,18 @@ export default {
   data() {
     return {
       left: false,
-      miniState: true,
+      miniState: true, // 左侧导航是否处于mini模式
       menuList: [
         {
           icon: 'home',
-          label: '首页',
-          route: '/'
+          label: '门户主页',
+          route: '/',
+          separator: true
+        },
+        {
+          icon: 'dashboard',
+          label: '管理系统',
+          route: '/home'
         },
         {
           icon: 'format_list_numbered',
@@ -147,31 +140,7 @@ export default {
           icon: 'person',
           label: '个人中心',
           route: '/me'
-        }
-      ],
-      link: this.$route.path,
-      searchText: ''
-    }
-  },
-  watch: {
-    searchText: function(newVal) {
-      if (newVal === '') {
-        if (this.$route.path === '/search') {
-          this.$router.back(-1)
-        }
-      } else {
-        if (this.$route.path !== '/search') {
-          this.$router.push('/search')
-        }
-        this.$store.commit('setKeyword', this.searchText)
-      }
-    }
-  },
-  created: function() {
-    //console.log(this.$route.path)
-    let info = this.$store.state.userInfo
-    if (info && info.type !== 0) {
-      this.menuList.push(
+        },
         {
           icon: 'update',
           label: '更新报价',
@@ -187,17 +156,75 @@ export default {
           label: '会员中心',
           route: '/member'
         }
-      )
+      ],
+      searchText: '',
+      logo: 'statics/app-logo.jpg'
     }
+  },
+  watch: {
+    '$store.getters.getKeyword': function(newVal) {
+      // 为了和首页的搜索同步
+      this.searchText = newVal
+    },
+    searchText: function(newVal) {
+      if (newVal === '') {
+        if (this.$route.path === '/search') {
+          // 清空，则取消搜索
+          this.$router.back(-1)
+        }
+      } else {
+        if (this.$route.path !== '/search') {
+          // 在其它页面，则跳转到搜索页
+          this.$router.push('/search')
+        } // 已经在搜索页，只需要改变keyword
+      }
+      this.$store.commit('setKeyword', this.searchText)
+    }
+  },
+  created: function() {
+    let { getCompanyInfo } = this.$store.getters
+    //if (getUserInfo && getUserInfo.type !== 0) { 个人账户已废弃
+    // 设置右上角头像
+    if (getCompanyInfo) {
+      let { company_logo } = getCompanyInfo
+      if (company_logo) this.logo = this.$head + company_logo
+
+      this.$axios.get('message/content').then(res => {
+        if (res.data.data) {
+          this.$q
+            .dialog({
+              title: '更新报价',
+              message: `客户于${this.$formatTime(
+                res.data.data.creatime
+              )}提醒您更新报价`,
+              persistent: true,
+              ok: {
+                label: '更新报价',
+                flat: true
+              },
+              cancel: {
+                label: '稍后再说',
+                flat: true
+              }
+            })
+            .onOk(() => {
+              this.$axios.delete('message/content').then(res => {
+                if (res) {
+                  this.$success('标记已读')
+                  this.$router.push('/update')
+                }
+              })
+            })
+        }
+      })
+    }
+    //}
+    this.$store.commit('setMenu', this.menuList)
   },
   methods: {
     logout() {
       this.$axios.post('signOut').then(() => {
-        this.$q.notify({
-          color: 'positive',
-          icon: 'logout',
-          message: '注销成功！'
-        })
+        this.$success('注销', 'logout')
         this.$store.dispatch('Logout')
         setTimeout(() => {
           this.$router.push('/auth/login')

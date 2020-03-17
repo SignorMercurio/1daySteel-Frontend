@@ -32,7 +32,7 @@
                 flat
                 text-color="primary"
                 label="获取验证码"
-                @click="getPicVeri"
+                @click="getMobileVeri"
               />
             </template>
           </q-input>

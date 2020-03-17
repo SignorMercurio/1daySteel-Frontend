@@ -210,11 +210,7 @@ export default {
         this.$axios.get(`visit/today_times/${this.company.id}`).then(res => {
           this.today = res.data.data
         })
-        if (company_status === 0) {
-          // 报价可能有效，也可能失效
-          let expire_time = new Date(update_time).getTime()
-          this.ifExpired = expire_time < Date.now()
-        }
+        this.ifExpired = this.$ifExpire(update_time, company_status)
       }
     })
   }

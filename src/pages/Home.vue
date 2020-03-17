@@ -193,8 +193,8 @@ export default {
           name: 'valid',
           label: '报价有效',
           align: 'center',
-          field: 'company_status',
-          format: val => (val === 1 ? '无效' : '有效')
+          field: 'update_time',
+          format: val => (this.$ifExpire(val) ? '无效' : '有效')
         },
         {
           name: 'content',
@@ -229,8 +229,8 @@ export default {
           name: 'valid',
           label: '报价有效',
           align: 'center',
-          field: 'company_status',
-          format: val => (val === 1 ? '无效' : '有效')
+          field: 'update_time',
+          format: val => (this.$ifExpire(val) ? '无效' : '有效')
         },
         {
           name: 'op',
@@ -281,19 +281,10 @@ export default {
     table1.requestServerInteraction()
     table2.requestServerInteraction()
 
-    let { getUserInfo, getCompanyInfo, getFav } = this.$store.getters
+    let { getUserInfo, getFav } = this.$store.getters
     if (getUserInfo) {
       this.groupOptions = getFav.concat(['新建分组...'])
       this.type = getUserInfo.type
-
-      if (this.type === 1) {
-        let { company_browse_num, id, company_url } = getCompanyInfo
-        this.url = company_url
-        this.total = company_browse_num
-        this.$axios.get(`visit/today_times/${id}`).then(res => {
-          this.today = res.data.data
-        })
-      }
     }
   },
   watch: {

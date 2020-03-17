@@ -2,7 +2,7 @@ import Vue from 'vue'
 import axios from 'axios'
 
 Vue.prototype.$axios = axios.create({
-  baseURL: 'http://47.100.30.181:8091/',
+  baseURL: 'http://139.196.176.11:8091/',
   timeout: 4000,
   withCredentials: true,
   headers: { 'Content-Type': 'application/x-www-form-urlencoded' }

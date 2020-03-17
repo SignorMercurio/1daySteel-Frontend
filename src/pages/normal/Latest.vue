@@ -150,8 +150,8 @@ export default {
           name: 'valid',
           label: '报价有效',
           align: 'center',
-          field: 'company_status',
-          format: val => (val === 1 ? '无效' : '有效')
+          field: 'update_time',
+          format: val => (this.$ifExpire(val) ? '无效' : '有效')
         },
         {
           name: 'time',
@@ -194,8 +194,8 @@ export default {
           name: 'valid',
           label: '报价有效',
           align: 'center',
-          field: 'company_status',
-          format: val => (val === 1 ? '无效' : '有效')
+          field: 'update_time',
+          format: val => (this.$ifExpire(val) ? '无效' : '有效')
         },
         {
           name: 'time',

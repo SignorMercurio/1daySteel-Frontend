@@ -15,10 +15,6 @@ Vue.prototype.$copy = function(url) {
   })
 }
 
-Vue.prototype.$head = 'http://139.196.176.11:8091/'
-
-Vue.prototype.$base_url = 'http://139.196.176.11:8092/#/'
-
 Vue.prototype.$success = function(ops, icon = 'check_circle') {
   this.$q.notify({
     color: 'positive',

@@ -1,8 +1,16 @@
 import Vue from 'vue'
 import axios from 'axios'
 
+let dev = '47.100.30.181'
+//let prod = '139.196.176.11'
+let prod = 'www.959pt.com'
+
+Vue.prototype.$head = `http://${prod}:8091/`
+
+Vue.prototype.$base_url = `http://${prod}/`
+
 Vue.prototype.$axios = axios.create({
-  baseURL: 'http://139.196.176.11:8091/',
+  baseURL: Vue.prototype.$head,
   timeout: 4000,
   withCredentials: true,
   headers: { 'Content-Type': 'application/x-www-form-urlencoded' }

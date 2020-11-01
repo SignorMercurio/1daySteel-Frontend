@@ -190,11 +190,19 @@ export default {
           classes: 'ellipsis'
         },
         {
-          name: 'valid',
-          label: '报价有效',
+          name: 'company_contact',
+          label: '联系人',
           align: 'center',
-          field: 'update_time',
-          format: val => (this.$ifExpire(val) ? '无效' : '有效')
+          field: 'company_contact',
+          style: 'max-width: 150px',
+          classes: 'ellipsis'
+        },
+        {
+          name: 'time',
+          label: '报价时间',
+          align: 'center',
+          field: 'add_time',
+          format: val => this.$formatTime(val)
         },
         {
           name: 'content',
@@ -203,7 +211,7 @@ export default {
           field: 'company_content',
           style: 'max-width: 150px',
           classes: 'ellipsis',
-          format: val => val.replace(/<.*>/g, ' ') // 不显示html标签
+          format: val => (val ? val.replace(/(<.*)|(&.*;)/g, ' ') : '') // 不显示html标签
         },
         {
           name: 'op',
@@ -226,11 +234,11 @@ export default {
           field: 'company_name'
         },
         {
-          name: 'valid',
-          label: '报价有效',
+          name: 'time',
+          label: '报价时间',
           align: 'center',
-          field: 'update_time',
-          format: val => (this.$ifExpire(val) ? '无效' : '有效')
+          field: 'add_time',
+          format: val => this.$formatTime(val)
         },
         {
           name: 'op',

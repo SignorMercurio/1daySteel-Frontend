@@ -135,7 +135,7 @@ export default {
           field: 'company_content',
           style: 'max-width: 150px',
           classes: 'ellipsis',
-          format: val => (val ? val.replace(/<.*>/g, ' ') : val)
+          format: val => (val ? val.replace(/(<.*)|(&.*;)/g, ' ') : '')
         },
         {
           name: 'op',

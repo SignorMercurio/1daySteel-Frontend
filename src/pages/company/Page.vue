@@ -1,6 +1,6 @@
 <template>
-  <q-page class="flex">
-    <div class="col q-pa-lg">
+  <q-page class="flex flex-center">
+    <div class="column q-pa-lg">
       <div>
         <q-breadcrumbs>
           <q-breadcrumbs-el label="首页" icon="home" to="/" />
@@ -14,7 +14,7 @@
       </div>
       <div class="row q-mt-md">
         <div class="col">
-          <q-form class="q-gutter-md" style="max-width: 600px">
+          <q-form class="q-gutter-sm" style="max-width: 800px">
             <q-banner rounded class="col bg-grey-3">
               <template v-slot:avatar>
                 <q-icon name="web_asset" color="primary"></q-icon>
@@ -49,6 +49,7 @@
           </q-form>
         </div>
       </div>
+
       <div class="q-mt-md q-mb-md">
         <q-breadcrumbs>
           <q-breadcrumbs-el label="首页" icon="home" to="/" />
@@ -60,7 +61,7 @@
           <q-breadcrumbs-el label="报价内容" icon="ballot" />
         </q-breadcrumbs>
       </div>
-      <div class="q-mt-md q-gutter-y-md">
+      <div class="q-gutter-y-md">
         <div class="row q-gutter-x-md">
           <div class="text-subtitle1">
             报价更新时间：{{ $formatTime(company.add_time) }}
@@ -87,7 +88,7 @@
           @click="$open($head + company.company_file_url)"
           class="q-ml-sm"
         ></q-btn>
-        <q-banner rounded class="col bg-grey-3" v-if="company.company_content">
+        <q-banner rounded class="bg-grey-3" v-if="company.company_content">
           <img v-if="ifExpired" src="~assets/fail.png" style="float: right" />
           <div
             class="text-subtitle1"
@@ -99,7 +100,7 @@
 
       <div class="row q-mt-md">
         <div class="col">
-          <q-form class="q-gutter-md" style="max-width: 600px">
+          <q-form class="q-gutter-sm" style="max-width: 800px">
             <div class="row">
               <div class="col">
                 <q-img
@@ -107,35 +108,79 @@
                   class="rounded-borders"
                   style="max-width: 150px"
                 >
-                  <div class="absolute-bottom text-center">公司LOGO</div>
                 </q-img>
               </div>
+              <div class="col-auto">
+                <div class="row">
+                  <q-input
+                    dense
+                    class="col-auto"
+                    readonly
+                    outlined
+                    label="公司电话"
+                    v-model="company.company_phone"
+                  ></q-input>
+                  <q-input
+                    dense
+                    class="col"
+                    readonly
+                    outlined
+                    label="公司传真"
+                    v-model="company.company_fax"
+                  ></q-input>
+                </div>
+                <div class="row">
+                  <q-input
+                    dense
+                    class="col-auto"
+                    readonly
+                    outlined
+                    label="微信"
+                    v-model="company.wechat"
+                  >
+                  </q-input>
+                  <q-input
+                    dense
+                    class="col"
+                    readonly
+                    outlined
+                    label="QQ"
+                    v-model="company.qq"
+                  >
+                    <template v-slot:append>
+                      <q-btn
+                        flat
+                        text-color="primary"
+                        label="QQ交谈"
+                        icon="headset_mic"
+                        @click="
+                          $open(
+                            `https://wpa.qq.com/msgrd?v=3&uin=${
+                              company.qq
+                            }&site=qq&menu=yes`
+                          )
+                        "
+                      />
+                    </template>
+                  </q-input>
+                </div>
+                <q-input
+                  dense
+                  readonly
+                  outlined
+                  label="主营业务"
+                  v-model="company.company_product"
+                ></q-input>
+                <q-input
+                  dense
+                  readonly
+                  outlined
+                  label="公司简介"
+                  v-model="company.company_intro"
+                  type="textarea"
+                ></q-input>
+              </div>
             </div>
-            <q-input
-              readonly
-              outlined
-              v-for="(item, index) in formList"
-              :key="index"
-              :label="item.ch"
-              :type="item.type ? item.type : 'text'"
-              v-model="company[item.en]"
-            >
-              <template v-if="item.en === 'qq'" v-slot:append>
-                <q-btn
-                  flat
-                  text-color="primary"
-                  label="QQ交谈"
-                  icon="headset_mic"
-                  @click="
-                    $open(
-                      `https://wpa.qq.com/msgrd?v=3&uin=${
-                        company.qq
-                      }&site=qq&menu=yes`
-                    )
-                  "
-                />
-              </template>
-            </q-input>
           </q-form>
         </div>
       </div>
@@ -159,37 +204,6 @@ export default {
         qq: '',
         company_fax: ''
       },
-      formList: [
-        {
-          en: 'company_product',
-          ch: '主营业务'
-        },
-        {
-          en: 'company_intro',
-          ch: '公司简介',
-          type: 'textarea'
-        },
-        {
-          en: 'company_address',
-          ch: '公司地址'
-        },
-        {
-          en: 'company_phone',
-          ch: '公司电话'
-        },
-        {
-          en: 'wechat',
-          ch: '微信'
-        },
-        {
-          en: 'qq',
-          ch: 'QQ'
-        },
-        {
-          en: 'company_fax',
-          ch: '公司传真'
-        }
-      ],
       today: 0,
       total: 0,
       ifExpired: true

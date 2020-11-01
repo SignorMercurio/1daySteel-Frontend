@@ -160,7 +160,9 @@ export default {
       if (url) {
         if (url.match(RegExp(/^(data:image\/|http)[^<>"']+$/))) {
           this.editor += `<img src="${url}" />`
-        } else alert('?')
+        } else {
+          this.$fail('URL中含非法字符！')
+        }
       } else {
         let newName =
           this.picCnt.toString() + '.' + this.getExt(this.picFile.name)

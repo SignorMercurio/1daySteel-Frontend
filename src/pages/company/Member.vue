@@ -92,13 +92,13 @@
             您可通过支付宝充值:
           </div>
           <div class="q-gutter-x-md">
-            <!--
             <q-btn
+              :icon="fabWechat"
               label="微信支付"
               color="positive"
               @click="topup('we')"
             ></q-btn
-            >--><q-btn
+            ><q-btn
               :icon="fabAlipay"
               label="支付宝支付"
               color="primary"
@@ -252,7 +252,7 @@
 </template>
 
 <script>
-import { fabAlipay } from '@quasar/extras/fontawesome-v5' // 支付宝图标
+import { fabAlipay, fabWechat } from '@quasar/extras/fontawesome-v5' // 支付宝图标
 export default {
   inject: ['reload'], // 刷新，见App.vue
   data() {
@@ -414,7 +414,11 @@ export default {
             })
         } else if (this.topupType === 'ali') {
           this.$axios.post(`pay?month=${this.months}`).then(res => {
-            document.write(res.data)
+            if (res) document.write(res.data)
+          })
+        } else if (this.topupType === 'we') {
+          this.$axios.post(`wxpay?month=${this.months}`).then(res => {
+            if (res) document.write(res.data)
           })
         }
       }

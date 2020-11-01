@@ -51,7 +51,7 @@
             v-model="company[item.en]"
           ></q-input>
           <q-uploader
-            label="上传公司授权书"
+            label="开票、打理资料"
             ref="auth"
             accept="image/*"
             with-credentials

@@ -42,14 +42,7 @@
     </q-header>
 
     <q-page-container>
-      <transition
-        enter-active-class="animated fadeIn"
-        leave-active-class="animated fadeOut"
-        appear
-        duration="300"
-      >
-        <router-view />
-      </transition>
+      <router-view />
     </q-page-container>
   </q-layout>
 </template>

@@ -3,7 +3,7 @@ import axios from 'axios'
 
 let dev = '47.100.30.181'
 //let prod = '139.196.176.11'
-let prod = 'www.959pt.com'
+let prod = '106.14.133.230'
 
 Vue.prototype.$head = `http://${prod}:8091/`
 

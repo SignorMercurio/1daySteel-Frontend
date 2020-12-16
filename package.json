@@ -18,7 +18,7 @@
     "@quasar/extras": "^1.9.11",
     "axios": "^0.18.1",
     "quasar": "^1.14.7",
-    "serialize-javascript": "^2.1.2"
+    "serialize-javascript": "^3.1.0"
   },
   "devDependencies": {
     "@quasar/app": "^1.9.6",

@@ -54,7 +54,7 @@ const routes = [
     ]
   },
   {
-    path: '/pages/:id',
+    path: '/:id',
     component: () => import('layouts/HeaderOnly.vue'),
     children: [{ path: '', component: () => import('pages/company/Page.vue') }]
   }
